@@ -1,0 +1,170 @@
+//                                               HW2
+//Author:       Berkin Divirkli
+//SU username:  berkindivrikli
+//SU ID:        28004
+//Date:         18.03.21
+//
+//
+//              The purpose of this homework is, understanding the structure of linked lists and practicing pointers.
+
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <sstream>
+using namespace std;
+
+struct node {
+    int value;
+    node* next;
+    node(){
+        next = NULL;
+    }
+    node(int val, node* nex)
+    :value(val),next(nex){
+    }
+};
+
+int main() {
+//    getting and chacking the input
+    string mode;
+    cout << "Please enter the order mode (A/D): ";
+    cin >> mode;
+    cin.ignore(numeric_limits<streamsize>::max(),'\n');
+    while ((mode != "A") && (mode != "D")) {
+        cout << "Please enter the order mode again (A/D): ";
+        cin >> mode;
+        cin.ignore(numeric_limits<streamsize>::max(),'\n');
+    }
+    string intLine;
+    node *head = new node();
+    node* ptr;
+    ptr = head;
+    cout << "Please enter the numbers in a line: ";
+    getline(cin, intLine);
+    stringstream ss(intLine);
+    int num;
+    int firstNum;
+    ss >> firstNum;
+    cout << endl;
+    cout << "Next Number: " << firstNum <<endl;
+//    initializing the first element of the input as the first value of the head node.
+    ptr->value = firstNum;
+    cout << "Deleted nodes: None" << endl;
+    cout << "Appended: " << firstNum << endl;
+    cout << "List content: " << firstNum << endl;
+    while (ss >> num) {
+//        Firstly, I checking whether it has been used before, then send it to the if else statements according to the modes.
+        cout << endl;
+        string deleted = "";
+        node* checkOne = head;
+        bool flagOne = false;
+        bool flagTwo = false;
+        while (checkOne != NULL) {
+            if (checkOne->value == num) {
+                flagOne = true;
+                break;
+            }
+            checkOne = checkOne->next;
+        }
+        if (flagOne == true) {
+            cout << "Next Number: " << num <<endl;
+            cout << num << " is already in the list!" << endl;
+            node*final = head;
+            cout << "List content: ";
+            while (final != NULL) {
+                cout << final->value << " ";
+                final = final->next;
+            }
+        }else{
+            node* del = new node(7,NULL);
+            node* delHolder = del;
+            if (mode == "A") {
+//                first it checks if the next node is available for the current number, if it is, program places the current number to the next node.
+                if (ptr->value < num) {
+                    node* p = new node(num,NULL);
+                    ptr->next = p;
+                    ptr = ptr->next;
+                }else{
+//                    if there is a part that has to be deleted program checks all the nodes from head node, and finds the place to delete te node. Then copies the part after the point and places the current number to the correnct node and assigns the next value ass NULL.
+                    node* checkTwo = head;
+                    while (checkTwo != NULL) {
+                        if (checkTwo->value > num){
+                            delHolder->value = checkTwo->value;
+                            delHolder->next = checkTwo->next;
+                            flagTwo = true;
+                            node* q = new node(num,NULL);
+                            checkTwo->value = q->value;
+                            checkTwo->next = NULL;
+                            ptr = checkTwo;
+                            checkTwo = checkTwo->next;
+                            break;
+                        }else{
+                            checkTwo = checkTwo->next;
+                        }
+                    }
+                }
+//                same algorithm as mode A
+            }else if(mode == "D"){
+                if (ptr->value > num) {
+                    node* p = new node(num,NULL);
+                    ptr->next = p;
+                    ptr = ptr->next;
+                }else{
+                    node* checkThree = head;
+                    while (checkThree != NULL) {
+                        if (checkThree->value < num){
+                            delHolder->value = checkThree->value;
+                            delHolder->next = checkThree->next;
+                            flagTwo = true;
+                            node* q = new node(num,NULL);
+                            checkThree->value = q->value;
+                            checkThree->next = NULL;
+                            ptr = checkThree;
+                            checkThree = checkThree->next;
+                            break;
+                        }else{
+                            checkThree = checkThree->next;
+                        }
+                    }
+                }
+            }
+//            displaying the required informations about the current number.
+            cout << "Next Number: " << num <<endl;
+            if (flagTwo == true) {
+                cout << "Deleted nodes: ";
+                while (del != NULL) {
+                    cout << del-> value << " ";
+                    del = del->next;
+                }
+                cout << endl;
+            }else{
+                cout << "Deleted nodes: None" << endl;
+            }
+            if (flagOne == false) {
+                cout << "Appended: " << num << endl;
+            }
+            node*final = head;
+            cout << "List content: ";
+            while (final != NULL) {
+                cout << final->value << " ";
+                final = final->next;
+            }
+        }
+        cout << endl;
+    }
+//    showing a message about the deleting the head node and deleting;
+    cout << endl;
+    cout << "All the nodes are deleted at the end of the program: ";
+    while (head != NULL) {
+        cout << head-> value << " ";
+        head = head->next;
+    }
+    cout << endl;
+    node* zeroNode;
+    while (head != NULL) {
+        zeroNode = head;
+        head = head->next;
+        delete zeroNode;
+    }
+    return 0;
+}
